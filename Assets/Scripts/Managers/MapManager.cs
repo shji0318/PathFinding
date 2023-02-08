@@ -9,8 +9,8 @@ public class MapManager : MonoBehaviour
 
     public static MapManager Map { get { return _instance; } }
 
-    List<PNode> _list = new List<PNode>();
-    Dictionary<int, SpriteRenderer> _srDic = new Dictionary<int, SpriteRenderer>();
+    List<PNode> _list = new List<PNode>(); // 현재 맵의 PNode들을 바인딩
+    Dictionary<int, SpriteRenderer> _srDic = new Dictionary<int, SpriteRenderer>(); // DoTween의 DoColor함수를 사용하기 위해 미리 바인딩
 
 
     public bool DoMove { get; private set; }
@@ -36,7 +36,7 @@ public class MapManager : MonoBehaviour
             return;
     }
 
-    public void InitMap()
+    public void InitMap() // 맵 초기화
     {
         int count = 0;
         foreach (PNode node in gameObject.GetComponentsInChildren<PNode>())
@@ -48,7 +48,7 @@ public class MapManager : MonoBehaviour
             _srDic.Add(node._nodeNum, sr);           
         }
 
-        NowNode = _list[3];
+        NowNode = Physics2D.OverlapCircle(new Vector2(45, 10),1f).GetComponent<PNode>();
         _srDic[NowNode._nodeNum].DOColor(Color.blue, 1f).Play();        
 
     }
@@ -84,7 +84,7 @@ public class MapManager : MonoBehaviour
         {
             PNode node = list[i];
 
-            tween = _srDic[node._nodeNum].DOColor(Color.green, 0.2f).From().Play();
+            tween = _srDic[node._nodeNum].DOColor(Color.green, 0.5f).From().Play();
             yield return tween.WaitForCompletion();
         }
         

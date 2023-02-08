@@ -55,14 +55,14 @@ public class AStar : PathFinding
                 {
                     PNode n = openList.GetElement(idx);
 
-                    if (n.F <= _dirWeight + SetH(next, end))
+                    if (n.F <= now.G+_dirWeight + SetH(next, end))
                         continue;
 
                     openList.Remove(idx);
                 }
                 
                                 
-                next.G = _dirWeight;
+                next.G = now.G+_dirWeight;
                 next.H = SetH(next, end);
                 next._parentNode = now._nodeNum;
                 dirNode[i] = next;
@@ -88,13 +88,13 @@ public class AStar : PathFinding
                 {                                      // 그렇지 않다면 현재 가중치가 더 낮기 때문에 새로 추가해 줄 필요 없어서 continue
                     PNode n = openList.GetElement(idx);
 
-                    if (n.F <= _diagWeight + SetH(next, end))
+                    if (n.F <= now.G+_diagWeight + SetH(next, end))
                         continue;
 
                     openList.Remove(idx);
                 }
 
-                next.G = _diagWeight;
+                next.G = now.G+_diagWeight;
                 next.H = SetH(next, end);
                 next._parentNode = now._nodeNum;
                 visited[next._nodeNum] = true;                
@@ -119,13 +119,14 @@ public class AStar : PathFinding
         return list;
     } 
 
+    
     public int SetH (PNode now, PNode end)
     {
         int x = Math.Abs(end._pos.x - now._pos.x);
         int y = Math.Abs(end._pos.y - now._pos.y);
 
-        int weight = (int)(Math.Pow(x, 2) + Math.Pow(y, 2)); // 피타고라스 정의는 원래 루트를 씌워져야하지만 int 값을 사용하고 있기에 좀 더 세부적인 계산을 위해 루트를 씌우지 않았음
-                                                             // x와 y 의 각 제곱값을 더한 값을 루트 씌우는 과정을 생략해도 동일한 대소 비교가 가능하기에 사용함
+        int weight = (int)Math.Sqrt(Math.Pow(x,2) + Math.Pow(y,2)); // 피타고라스 정의는 원래 루트를 씌워져야하지만 int 값을 사용하고 있기에 좀 더 세부적인 계산을 위해 루트를 씌우지 않았음
+                                                           
 
         return weight;
     }

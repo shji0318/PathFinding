@@ -9,7 +9,13 @@ public class PNode : MonoBehaviour
     public int _nodeNum;
     public bool _wall;
     public Vector2Int _pos;
+    public int _arrPosX;
+    public int _arrPosY;
     public int _parentNode;
+
+    public bool _isStraight;
+    public int _dir;
+    public int _diag;
     
     public float F { get { return G + H; } } // G+H 전체 가중치
     public float G { get; set; } // 시작 노드 부터 현재 노드 까지 가중치

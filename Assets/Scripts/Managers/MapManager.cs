@@ -9,10 +9,14 @@ public class MapManager : MonoBehaviour
 
     public static MapManager Map { get { return _instance; } }
 
-    List<PNode> _list = new List<PNode>(); // 현재 맵의 PNode들을 바인딩
+    Dictionary<int,PNode> _list = new Dictionary<int,PNode>(); // 현재 맵의 PNode들을 바인딩
     Dictionary<int, SpriteRenderer> _srDic = new Dictionary<int, SpriteRenderer>(); // DoTween의 DoColor함수를 사용하기 위해 미리 바인딩
+    PNode[,] _mapNode = new PNode[10,10];
 
 
+    public PNode[,] MapNode { get { return _mapNode; } }
+    public int MapMaxX { get { return _mapNode.GetLength(1); } }
+    public int MapMaxY { get { return _mapNode.GetLength(0); } }
     public bool DoMove { get; private set; }
     public PathFinding Path{ private get; set; }
     public PNode NowNode { get; set; }
@@ -20,9 +24,9 @@ public class MapManager : MonoBehaviour
     public int NodeCount { get { return _list.Count; } }
     void Start()
     {
-        Init();
-        InitMap();
         InitFindingAlgorithm();
+        Init();
+        InitMap();        
     }
 
     public void Init()
@@ -38,17 +42,21 @@ public class MapManager : MonoBehaviour
 
     public void InitMap() // 맵 초기화
     {
-        int count = 0;
-        foreach (PNode node in gameObject.GetComponentsInChildren<PNode>())
+        int count = 0;               
+        foreach (PNode node in gameObject.GetComponentsInChildren<PNode>(true))
         {
             node._nodeNum = count++;
             SpriteRenderer sr = node.GetComponent<SpriteRenderer>();
+            node._arrPosY = node._pos.y / Path._width;
+            node._arrPosX = node._pos.x / Path._width;
+            if (node._wall == true)
+                _mapNode[node._arrPosY,node._arrPosX]= node;
 
-            _list.Add(node);
+            _list.Add(node._nodeNum,node);
             _srDic.Add(node._nodeNum, sr);           
-        }
+        }      
 
-        NowNode = Physics2D.OverlapCircle(new Vector2(45, 10),1f).GetComponent<PNode>();
+        NowNode = _list[0];
         _srDic[NowNode._nodeNum].DOColor(Color.blue, 1f).Play();        
 
     }
@@ -60,7 +68,7 @@ public class MapManager : MonoBehaviour
 
     public void RefreshWeight()
     {
-        foreach (PNode node in _list)
+        foreach (PNode node in _list.Values)
         {
             node.G = 0;
             node.H = 0;
@@ -95,8 +103,6 @@ public class MapManager : MonoBehaviour
         DoMove = false;
 
         RefreshWeight();
-        yield return null;
-    }
-
-    
+        yield break;
+    }    
 }

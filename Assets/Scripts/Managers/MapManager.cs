@@ -11,22 +11,26 @@ public class MapManager : MonoBehaviour
 
     Dictionary<int,PNode> _list = new Dictionary<int,PNode>(); // 현재 맵의 PNode들을 바인딩
     Dictionary<int, SpriteRenderer> _srDic = new Dictionary<int, SpriteRenderer>(); // DoTween의 DoColor함수를 사용하기 위해 미리 바인딩
-    PNode[,] _mapNode = new PNode[10,10];
-
-
-    public PNode[,] MapNode { get { return _mapNode; } }
-    public int MapMaxX { get { return _mapNode.GetLength(1); } }
-    public int MapMaxY { get { return _mapNode.GetLength(0); } }
+           
+    public Dictionary<int, PNode> List { get { return _list; }}
+    public Dictionary<int, SpriteRenderer> SRDic { get { return _srDic; } }
     public bool DoMove { get; private set; }
+    public bool AStar { get; set; } = true;
     public PathFinding Path{ private get; set; }
     public PNode NowNode { get; set; }
     public PNode EndNode { get; set; }
     public int NodeCount { get { return _list.Count; } }
     void Start()
     {
-        InitFindingAlgorithm();
+        GenerateMap();
+    }
+
+
+    public void GenerateMap()
+    {
+        InitFindingAlgorithm(new AStar());
         Init();
-        InitMap();        
+        InitMap();
     }
 
     public void Init()
@@ -42,15 +46,12 @@ public class MapManager : MonoBehaviour
 
     public void InitMap() // 맵 초기화
     {
-        int count = 0;               
+                   
         foreach (PNode node in gameObject.GetComponentsInChildren<PNode>(true))
         {
-            node._nodeNum = count++;
-            SpriteRenderer sr = node.GetComponent<SpriteRenderer>();
-            node._arrPosY = node._pos.y / Path._width;
-            node._arrPosX = node._pos.x / Path._width;
-            if (node._wall == true)
-                _mapNode[node._arrPosY,node._arrPosX]= node;
+            node._nodeNum = (node._pos.y / Path._width) * 10 + (node._pos.x / Path._width);
+            node.gameObject.name = node._nodeNum.ToString();
+            SpriteRenderer sr = node.GetComponent<SpriteRenderer>();                    
 
             _list.Add(node._nodeNum,node);
             _srDic.Add(node._nodeNum, sr);           
@@ -61,17 +62,27 @@ public class MapManager : MonoBehaviour
 
     }
 
-    public void InitFindingAlgorithm()
+    public void InitFindingAlgorithm(PathFinding path)
     {
-        Path = new AStar();
+        Path = path;
+        RefreshNode();        
     }
 
-    public void RefreshWeight()
+    public void RefreshNode()
     {
         foreach (PNode node in _list.Values)
         {
             node.G = 0;
             node.H = 0;
+            node._isStraight = false;
+            node._dir = 0;
+            node._diag = 0;
+            node._parentNode = 0;
+
+            if(node._wall == false)
+                SRDic[node._nodeNum].DOColor(Color.white, 0.5f).Play();
+
+            _srDic[NowNode._nodeNum].DOColor(Color.blue, 1f).Play();
         }
     }
 
@@ -97,12 +108,13 @@ public class MapManager : MonoBehaviour
         }
         
         _srDic[start._nodeNum].DOColor(Color.white, 0.5f).Play();
-        _srDic[end._nodeNum].DOColor(Color.blue, 0.5f).Play();
+        _srDic[end._nodeNum].DOColor(Color.blue, 0.5f).Play();        
 
         NowNode = end;
-        DoMove = false;
+        RefreshNode();
 
-        RefreshWeight();
+        DoMove = false;
+        
         yield break;
     }    
 }

@@ -158,7 +158,10 @@ public class PriorityQueue<T> where T : PNode// Ascending
         return _count;
     }
 
-    
+    public void Clear()
+    {
+        _list.Clear();
+    }
 
     
 

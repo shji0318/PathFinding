@@ -209,7 +209,7 @@ public class JPS : PathFinding
     public PNode StraightSearch(PNode current,int dir,PNode end)
     {
         Vector2Int pos = current._pos;
-        float g = current.G;
+        float g = 0;
         PNode jumpPoint = null;
 
         while(true)
@@ -255,7 +255,7 @@ public class JPS : PathFinding
     public PNode DiagSearch(PNode current, int diag, PNode end)
     {
         Vector2Int pos = current._pos;
-        float g = current.G;
+        float g = 0;
         PNode jumpPoint = null;
 
         while (true)

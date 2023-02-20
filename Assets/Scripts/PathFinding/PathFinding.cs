@@ -5,6 +5,7 @@ using UnityEngine;
 
 public abstract class PathFinding // 추후 PathFinding 알고리즘을 교체할 일이 있을 경우 확장을 고려하여 부모 추상 클래스를 만듦
 {
+    public bool _isFind = false;
     public int _width; // 타일 크기가 모든 게임 동일하지 않기 때문에 변경 가능하게 하기 위함
     // ↑ → ↓ ←
     public Vector2Int[] _dir;

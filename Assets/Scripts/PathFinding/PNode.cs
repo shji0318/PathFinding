@@ -16,9 +16,11 @@ public class PNode : MonoBehaviour
     public int _dir;
     public int _diag;
 
-    
+    [field : SerializeField]
     public float F { get { return G + H; } } // G+H 전체 가중치
+    [field: SerializeField]
     public float G { get; set; } // 시작 노드 부터 현재 노드 까지 가중치
+    [field: SerializeField]
     public float H { get; set; } // 현재 노드 부터 도착 노드 까지 가중치
 
     public void Start()

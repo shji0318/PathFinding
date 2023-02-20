@@ -4,9 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class JPS : PathFinding
-{
-    bool _isFind = false;
-    List<PNode> _jumpList = new List<PNode>();
+{    
+    #region 진행방향별 노드 체크
     int[,] _checkPoint = new int[,]
     {
         { 3,3,1,0}, // 진행 방향이 위일 때 {← ↖} {→ ↗} 체크
@@ -46,8 +45,8 @@ public class JPS : PathFinding
         { 2,3,2,1,3}, // 진행 방향이 좌하단일 때 ↓ ← ↙ ↘ ↖ 방향만 체크
         { 3,0,3,0,2}  // 진행 방향이 좌상단일 때 ← ↑ ↖ ↗ ↙ 방향만 체크
     };
+    #endregion
 
-    
     public JPS (int width =5)
     {
         _width = width;
@@ -174,6 +173,9 @@ public class JPS : PathFinding
             }       
         }
 
+        if (_isFind == false)
+            return null;
+
         List<PNode> list = new List<PNode>();
         Queue<PNode> q = new Queue<PNode>();
         q.Enqueue(end);
@@ -198,14 +200,10 @@ public class JPS : PathFinding
             }
             q.Enqueue(parent);
         }
-
-        if (_isFind == false)        
-            return null;        
-        else
-        {
-            list.Reverse();
-            return list;
-        }        
+        
+        list.Reverse();
+        return list;
+                
     }
 
     public PNode StraightSearch(PNode current,int dir,PNode end)
@@ -296,10 +294,9 @@ public class JPS : PathFinding
                 if (right._wall == true && rightUp._wall == false)
                     return SetJumpPoint(pos, current, false, diag, g);                
             }
-            Util.FindOverlap<PNode>(pos).G = current.G+g;
-            //보조 탐색 
-            jumpPoint = StraightSearch(Util.FindOverlap<PNode>(pos), _secondSearch[diag, 0],end);
             
+            //보조 탐색 
+            jumpPoint = StraightSearch(Util.FindOverlap<PNode>(pos), _secondSearch[diag, 0],end);            
             if (jumpPoint != null)
                 return SetJumpPoint(pos, current, false, diag, g);           
 
@@ -318,7 +315,7 @@ public class JPS : PathFinding
         int x = Math.Abs(end._pos.x - now._pos.x);
         int y = Math.Abs(end._pos.y - now._pos.y);
 
-        int weight = (int)Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)); // 피타고라스 정의는 원래 루트를 씌워져야하지만 int 값을 사용하고 있기에 좀 더 세부적인 계산을 위해 루트를 씌우지 않았음
+        int weight = (int)Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)); 
 
 
         return weight;
@@ -327,6 +324,9 @@ public class JPS : PathFinding
     public PNode SetJumpPoint(Vector2Int pos, PNode current, bool straight, int dir, float g)
     {
         PNode jumpPoint = Util.FindOverlap<PNode>(pos);
+
+        if (jumpPoint.H != 0 && jumpPoint.G < current.G + g)
+            return null;
 
         if (straight == true)
         {
@@ -345,13 +345,4 @@ public class JPS : PathFinding
 
         return jumpPoint;
     }
-
-
-
-
-
-
-
-
-
 }

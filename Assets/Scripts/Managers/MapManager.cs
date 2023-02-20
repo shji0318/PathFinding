@@ -5,7 +5,7 @@ using DG.Tweening;
 
 public class MapManager : MonoBehaviour
 {
-    private static MapManager _instance;
+    public static MapManager _instance;
 
     public static MapManager Map { get { return _instance; } }
 
@@ -35,15 +35,12 @@ public class MapManager : MonoBehaviour
 
     public void Init()
     {
-        if (_instance == null) //싱글톤
+        if(_instance == null)
         {
             _instance = this;
             DontDestroyOnLoad(this.gameObject);
         }
-        else
-            return;
     }
-
     public void InitMap() // 맵 초기화
     {
                    
@@ -95,10 +92,24 @@ public class MapManager : MonoBehaviour
         
         var tween = _srDic[end._nodeNum].DOColor(Color.red, 1f).Play();
 
-        List<PNode> list = Path.Finding(start, end);
+        List<PNode> list = Path.Finding(start, end);        
 
         yield return tween.WaitForCompletion();
-        
+
+        if (list == null)
+        {
+            var tweenStart = _srDic[start._nodeNum].DOColor(Color.blue, 0.5f).Play();
+            yield return tweenStart.WaitForCompletion();
+            var tweenEnd = _srDic[end._nodeNum].DOColor(Color.white, 0.5f).Play();
+            yield return tweenEnd.WaitForCompletion();
+
+            RefreshNode();
+
+            DoMove = false;
+            Debug.Log("현재 이동할 수 있는 루트가 없습니다. 막다른길로만 이뤄져 있는지 확인해 주세요");
+            yield break;
+        }
+
         for (int i = 0; i < list.Count; i++)
         {
             PNode node = list[i];

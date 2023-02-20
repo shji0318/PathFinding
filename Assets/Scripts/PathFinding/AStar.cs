@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class AStar : PathFinding
 {   
+    
     public AStar(int width = 5) // 현재 사용중인 타일의 너비 값을 default로 해놓음, 변경 가능 
     {   
         _width = width;
@@ -15,6 +16,7 @@ public class AStar : PathFinding
     // ↗ ↘ ↙ ↖ diag
     public override List<PNode> Finding(PNode start, PNode end)
     {
+        _isFind = false;
         bool[] visited = new bool[MapManager.Map.NodeCount];
         int[] weights = new int[MapManager.Map.NodeCount];
         PriorityQueue<PNode> openList = new PriorityQueue<PNode>();
@@ -23,7 +25,7 @@ public class AStar : PathFinding
         openList.Enqueue(start);
         visited[start._nodeNum] = true; // closeList에 들어갔다면 재방문할 필요가 없으니 패스
         
-        while(true)
+        while(openList.Count()>0)
         {
             PNode now = openList.Dequeue();
             closeList.Add(now._nodeNum, now);
@@ -31,7 +33,11 @@ public class AStar : PathFinding
             
 
             if (now == end)
+            {
+                _isFind = true;
                 break;
+            }
+                
                  
 
             PNode[] dirNode = new PNode[4]; // 대각선에 가능 여부를 구하기 위해 저장
@@ -102,6 +108,9 @@ public class AStar : PathFinding
             }
         }
 
+        if (_isFind == false)
+            return null;
+
         List<PNode> list = new List<PNode>();
         PNode node = end;
         list.Add(node);
@@ -116,6 +125,7 @@ public class AStar : PathFinding
 
         list.Reverse();
 
+       
         return list;
     } 
 

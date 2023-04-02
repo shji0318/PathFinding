@@ -55,8 +55,11 @@ public class JPS : PathFinding
 
     public override List<PNode> Finding(PNode start, PNode end)
     {
-        PriorityQueue<PNode> openList = new PriorityQueue<PNode>();
         
+        PriorityQueue<PNode> openList = new PriorityQueue<PNode>();
+        System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+
+        sw.Start();
         _isFind = false;
 
         #region 처음 start 노드는 8방향 전부 탐색
@@ -172,6 +175,8 @@ public class JPS : PathFinding
                 }
             }       
         }
+        sw.Stop();
+        Debug.Log($"JPS 알고리즘 소요시간 : {sw.ElapsedMilliseconds}ms");
 
         if (_isFind == false)
             return null;
@@ -202,6 +207,8 @@ public class JPS : PathFinding
         }
         
         list.Reverse();
+
+        
         return list;
                 
     }

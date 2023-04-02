@@ -46,7 +46,7 @@ public class MapManager : MonoBehaviour
                    
         foreach (PNode node in gameObject.GetComponentsInChildren<PNode>(true))
         {
-            node._nodeNum = (node._pos.y / Path._width) * 10 + (node._pos.x / Path._width);
+            node._nodeNum = (node._pos.y / Path._width) * 30 + (node._pos.x / Path._width);
             node.gameObject.name = node._nodeNum.ToString();
             SpriteRenderer sr = node.GetComponent<SpriteRenderer>();                    
 

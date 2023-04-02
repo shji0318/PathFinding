@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 public class AStar : PathFinding
 {   
     
@@ -16,6 +15,8 @@ public class AStar : PathFinding
     // ↗ ↘ ↙ ↖ diag
     public override List<PNode> Finding(PNode start, PNode end)
     {
+        System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+        sw.Start();
         _isFind = false;
         bool[] visited = new bool[MapManager.Map.NodeCount];
         int[] weights = new int[MapManager.Map.NodeCount];
@@ -108,6 +109,10 @@ public class AStar : PathFinding
             }
         }
 
+        sw.Stop();
+
+        Debug.Log($"A* 알고리즘 소요 시간 : {sw.ElapsedMilliseconds}ms");
+
         if (_isFind == false)
             return null;
 
@@ -124,7 +129,7 @@ public class AStar : PathFinding
         }
 
         list.Reverse();
-
+       
        
         return list;
     } 
